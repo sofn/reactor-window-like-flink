@@ -15,14 +15,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author lesofn
  * @version 1.0 Created at: 2021-02-25 20:02
  */
-public class BatchPublisherTest {
+public class WindowPublisherTest {
 
     @Test
-    public void subscribe() throws InterruptedException {
+    public void testWindowPublisher() throws InterruptedException {
         int itemCount = 50000;
         int threadCount = 10;
 
-        BatchPublisher<String> publisher = new BatchPublisher<>(16, (int) (threadCount * 1.5), Duration.ofMillis(1));
+        WindowPublisher<String> publisher = new WindowPublisher<>(16, (int) (threadCount * 1.5), Duration.ofMillis(1));
 
         ExecutorService pool = Executors.newFixedThreadPool(threadCount);
         AtomicInteger atomicInteger = new AtomicInteger();
@@ -35,7 +35,7 @@ public class BatchPublisherTest {
         Flux.range(0, itemCount).subscribe(i -> pool.submit(() -> {
             try {
                 TimeUnit.MILLISECONDS.sleep(1);
-                publisher.onNext(i + "");
+                publisher.publish(i + "");
             } catch (Exception e) {
                 e.printStackTrace();
             }
